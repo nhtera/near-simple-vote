@@ -1,6 +1,8 @@
 import 'regenerator-runtime/runtime'
 import React from 'react'
 import { login, logout } from './utils'
+
+import './main.css'
 import './global.css'
 
 import getConfig from './config'
