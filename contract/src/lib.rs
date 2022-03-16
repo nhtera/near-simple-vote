@@ -119,6 +119,60 @@ impl Welcome {
         posts
     }
 
+    pub fn up_votes(&mut self, post_id: usize) {
+        let voter = env::predecessor_account_id();
+
+        env::log(format!("Upvote post: {} by account: {}", post_id, voter).as_bytes());
+
+        match self.posts.get(&post_id).as_mut() {
+            Some(post) => {
+                post.add_upvote(voter);
+                self.posts.insert(&post_id, post);
+            },
+            None => panic!("Post does's exist"),
+        }
+    }
+
+    pub fn remove_upvote(&mut self, post_id: usize) {
+        let mut post = match self.posts.get(&post_id) {
+            Some(post) => post,
+            None => panic!("Post does't exist"),
+        };
+
+        let voter = env::predecessor_account_id();
+        env::log(format!("Remove upvote post: {} by account: {}", post_id, voter).as_bytes());
+
+        post.remove_upvote(voter);
+        self.posts.insert(&post_id, &post);
+    }
+
+    pub fn down_votes(&mut self, post_id: usize) {
+        let voter = env::predecessor_account_id();
+        env::log(format!("Downvote post: {} by account: {}", post_id, voter).as_bytes());
+
+        match self.posts.get(&post_id).as_mut() {
+            Some(post) => {
+                post.add_upvote(voter);
+                self.posts.insert(&post_id, post);
+            },
+            None => panic!("Post does't exist"),
+        }
+    }
+
+    pub fn remove_downvote(&mut self, post_id: usize) {
+        let mut post = match self.posts.get(&post_id) {
+            Some(post) => post,
+            None => panic!("Post does't exist"),
+        };
+
+        let voter = env::predecessor_account_id();
+        env::log(format!("Remve downvote post: {} by account: {}", post_id, voter).as_bytes());
+
+        post.remove_upvote(voter);
+
+        self.posts.insert(&post_id, &post);
+    }
+
 
     pub fn set_greeting(&mut self, message: String) {
         let account_id = env::signer_account_id();
