@@ -25,7 +25,7 @@ setup_alloc!();
 // Note: the names of the structs are not important when calling the smart contract, but the function names are
 #[near_bindgen]
 #[derive(BorshDeserialize, BorshSerialize)]
-pub struct Welcome {
+pub struct SimpleVote {
     records: LookupMap<String, String>,
     posts: UnorderedMap<usize, Post>,
 }
@@ -81,7 +81,7 @@ impl Post {
 
 }
 
-impl Default for Welcome {
+impl Default for SimpleVote {
   fn default() -> Self {
     Self {
       records: LookupMap::new(b"a".to_vec()),
@@ -91,7 +91,7 @@ impl Default for Welcome {
 }
 
 #[near_bindgen]
-impl Welcome {
+impl SimpleVote {
 
     pub fn create_post(&mut self, title: String, body: String) -> usize {
         let post_id = (self.posts.len() + 1) as usize;
@@ -119,7 +119,7 @@ impl Welcome {
         posts
     }
 
-    pub fn up_votes(&mut self, post_id: usize) {
+    pub fn up_vote(&mut self, post_id: usize) {
         let voter = env::predecessor_account_id();
 
         env::log(format!("Upvote post: {} by account: {}", post_id, voter).as_bytes());
@@ -129,14 +129,14 @@ impl Welcome {
                 post.add_upvote(voter);
                 self.posts.insert(&post_id, post);
             },
-            None => panic!("Post does's exist"),
+            None => panic!("The post does's exist"),
         }
     }
 
     pub fn remove_upvote(&mut self, post_id: usize) {
         let mut post = match self.posts.get(&post_id) {
             Some(post) => post,
-            None => panic!("Post does't exist"),
+            None => panic!("The post does't exist"),
         };
 
         let voter = env::predecessor_account_id();
@@ -146,27 +146,27 @@ impl Welcome {
         self.posts.insert(&post_id, &post);
     }
 
-    pub fn down_votes(&mut self, post_id: usize) {
+    pub fn down_vote(&mut self, post_id: usize) {
         let voter = env::predecessor_account_id();
         env::log(format!("Downvote post: {} by account: {}", post_id, voter).as_bytes());
 
         match self.posts.get(&post_id).as_mut() {
             Some(post) => {
-                post.add_upvote(voter);
+                post.add_downvote(voter);
                 self.posts.insert(&post_id, post);
             },
-            None => panic!("Post does't exist"),
+            None => panic!("The post does't exist"),
         }
     }
 
     pub fn remove_downvote(&mut self, post_id: usize) {
         let mut post = match self.posts.get(&post_id) {
             Some(post) => post,
-            None => panic!("Post does't exist"),
+            None => panic!("The post does't exist"),
         };
 
         let voter = env::predecessor_account_id();
-        env::log(format!("Remve downvote post: {} by account: {}", post_id, voter).as_bytes());
+        env::log(format!("Remove downvote post: {} by account: {}", post_id, voter).as_bytes());
 
         post.remove_upvote(voter);
 
@@ -239,7 +239,7 @@ mod tests {
     fn set_then_get_greeting() {
         let context = get_context(vec![], false);
         testing_env!(context);
-        let mut contract = Welcome::default();
+        let mut contract = SimpleVote::default();
         contract.set_greeting("howdy".to_string());
         assert_eq!(
             "howdy".to_string(),
@@ -251,7 +251,7 @@ mod tests {
     fn get_default_greeting() {
         let context = get_context(vec![], true);
         testing_env!(context);
-        let contract = Welcome::default();
+        let contract = SimpleVote::default();
         // this test did not call set_greeting so should return the default "Hello" greeting
         assert_eq!(
             "Hello".to_string(),
