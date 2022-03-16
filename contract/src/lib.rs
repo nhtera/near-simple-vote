@@ -236,6 +236,30 @@ mod tests {
     }
 
     #[test]
+    fn create_post() {
+        let context = get_context(vec![], false);
+        testing_env!(context);
+        let mut contract = SimpleVote::default();
+        contract.create_post("Day la tieu de".to_string(), "Day la noi dung".to_string());
+
+        assert_eq!("Day la tieu de".to_string(), contract.get_post(1).unwrap().title);
+        assert_eq!("Day la noi dung".to_string(), contract.get_post(1).unwrap().body);
+    }
+
+    #[test]
+    fn up_vote() {
+        let context = get_context(vec![], false);
+        testing_env!(context);
+        let mut contract = SimpleVote::default();
+
+        contract.create_post("Day la tieu de".to_string(), "Day la noi dung".to_string());
+        contract.up_vote(1);
+
+        assert_eq!(1, contract.get_post(1).unwrap().up_votes.len());
+        assert_eq!(0, contract.get_post(1).unwrap().down_votes.len());
+    }
+
+    #[test]
     fn set_then_get_greeting() {
         let context = get_context(vec![], false);
         testing_env!(context);
