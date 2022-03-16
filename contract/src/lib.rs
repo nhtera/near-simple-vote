@@ -110,6 +110,15 @@ impl Welcome {
         self.posts.get(&post_id)
     }
 
+    pub fn get_posts(&self) -> Vec<Post> {
+        let mut posts = Vec::new();
+        for post_id in self.posts.keys() {
+            posts.push(self.posts.get(&post_id).unwrap());
+        }
+
+        posts
+    }
+
 
     pub fn set_greeting(&mut self, message: String) {
         let account_id = env::signer_account_id();
