@@ -13,10 +13,13 @@
 
 // To conserve gas, efficient serialization is achieved through Borsh (http://borsh.io/)
 use near_sdk::borsh::{self, BorshDeserialize, BorshSerialize};
+use near_sdk::{serde::{Serialize, Deserialize}, AccountId};
 use near_sdk::{env, near_bindgen, setup_alloc};
-use near_sdk::collections::LookupMap;
+use near_sdk::collections::{LookupMap, UnorderedMap};
+use std::collections::HashSet;
 
 setup_alloc!();
+
 
 // Structs in Rust are similar to other languages, and may include impl keyword as shown below
 // Note: the names of the structs are not important when calling the smart contract, but the function names are
@@ -24,18 +27,90 @@ setup_alloc!();
 #[derive(BorshDeserialize, BorshSerialize)]
 pub struct Welcome {
     records: LookupMap<String, String>,
+    posts: UnorderedMap<usize, Post>,
+}
+
+#[derive(Serialize, Deserialize, BorshDeserialize, BorshSerialize)]
+#[serde(crate = "near_sdk::serde")]
+pub struct Post {
+    post_id: usize,
+    title: String,
+    body: String,
+    author: AccountId,
+    create_at: u64,
+    up_votes: HashSet<AccountId>,
+    down_votes: HashSet<AccountId>,
+}
+
+impl Post {
+    pub fn new(post_id: usize, title: String, body: String, author: AccountId, create_at: u64) -> Self {
+        Self {
+            post_id,
+            title,
+            body,
+            author,
+            create_at,
+            up_votes: HashSet::new(),
+            down_votes: HashSet::new(),
+        }
+    }
+
+    pub fn add_upvote(&mut self, account_id: AccountId) -> bool {
+        if self.down_votes.contains(&account_id) {
+            self.down_votes.retain(|x| *x!= account_id);
+        }
+
+        self.up_votes.insert(account_id)
+    }
+
+    pub fn remove_upvote(&mut self, account_id: AccountId) -> bool {
+        self.up_votes.remove(&account_id)
+    }
+
+    pub fn add_downvote(&mut self, account_id: AccountId) -> bool {
+        if self.up_votes.contains(&account_id) {
+            self.up_votes.retain(|x| *x != account_id);
+        }
+
+        self.down_votes.insert(account_id)
+    }
+
+    pub fn remove_downvote(&mut self, account_id: AccountId) -> bool {
+        self.down_votes.remove(&account_id)
+    }
+
 }
 
 impl Default for Welcome {
   fn default() -> Self {
     Self {
       records: LookupMap::new(b"a".to_vec()),
+      posts: UnorderedMap::new(b"posts".to_vec()),
     }
   }
 }
 
 #[near_bindgen]
 impl Welcome {
+
+    pub fn create_post(&mut self, title: String, body: String) -> usize {
+        let post_id = (self.posts.len() + 1) as usize;
+        let author = env::predecessor_account_id();
+        let create_at = env::block_timestamp();
+        let new_post = Post::new(post_id, title.clone(), body, author.clone(), create_at);
+
+        self.posts.insert(&post_id, &new_post);
+
+        env::log(format!("Post: {} was created by {}", title, author).as_bytes());
+
+        post_id
+    }
+
+    pub fn get_post(&self, post_id: usize) -> Option<Post> {
+        self.posts.get(&post_id)
+    }
+
+
     pub fn set_greeting(&mut self, message: String) {
         let account_id = env::signer_account_id();
 
@@ -54,6 +129,8 @@ impl Welcome {
             None => "Hello".to_string(),
         }
     }
+
+
 }
 
 /*
