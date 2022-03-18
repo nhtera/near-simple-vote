@@ -74,12 +74,12 @@ export default function Post({id, title, body, up_votes, down_votes}) {
             <span className="inline-block h-1 w-10 rounded bg-indigo-500 mt-8 mb-6"></span>
             </div>
             <div className="flex justify-center">
-                <button onClick={upvote.bind(this, id, voteStatus)} className={`inline-flex text-white border-0 py-2 px-6 focus:outline-none rounded text-lg transition ${
+                <button onClick={upvote.bind(this, id, voteStatus)} className={`relative inline-flex text-white border-0 py-2 px-6 focus:outline-none rounded text-lg transition ${
                     voteStatus === "upvote" ? "bg-green-500 hover:bg-green-600" : "bg-gray-400"
-                  }`}>Yes</button>
-                <button onClick={downvote.bind(this, id, voteStatus)} className={`ml-4 inline-flex text-white border-0 py-2 px-6 focus:outline-none rounded text-lg transition ${
+                  }`}>Yes <span className="absolute text-white bg-red-400 -right-4 -top-4 rounded-full w-8 h-8 text-sm p-1">{up_votes.length}</span></button> 
+                <button onClick={downvote.bind(this, id, voteStatus)} className={`ml-5 relative inline-flex text-white border-0 py-2 px-6 focus:outline-none rounded text-lg transition ${
                     voteStatus === "downvote" ? "bg-red-500 hover:bg-red-600" : "bg-gray-400"
-                  }`}>No</button>
+                  }`}>No <span className="absolute text-white bg-red-400 -right-4 -top-4 rounded-full w-8 h-8 text-sm p-1">{down_votes.length}</span></button>
             </div>
         </div>
     </section>
