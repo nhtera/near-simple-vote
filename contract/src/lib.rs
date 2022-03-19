@@ -253,6 +253,18 @@ mod tests {
     }
 
     #[test]
+    fn remove_post() {
+        let context = get_context(vec![], false);
+        testing_env!(context);
+        let mut contract = SimpleVote::default();
+        contract.create_post("Day la tieu de".to_string(), "Day la noi dung".to_string());
+        assert_eq!(1, contract.get_posts().len());
+        let post_id = contract.get_post(1).unwrap().post_id;
+        contract.remove_post(post_id);
+        assert_eq!(0, contract.get_posts().len());
+    }
+
+    #[test]
     fn up_vote() {
         let context = get_context(vec![], false);
         testing_env!(context);
