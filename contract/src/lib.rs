@@ -28,6 +28,7 @@ setup_alloc!();
 pub struct SimpleVote {
     records: LookupMap<String, String>,
     posts: UnorderedMap<usize, Post>,
+    post_id: usize,
 }
 
 #[derive(Serialize, Deserialize, BorshDeserialize, BorshSerialize)]
@@ -86,6 +87,7 @@ impl Default for SimpleVote {
     Self {
       records: LookupMap::new(b"a".to_vec()),
       posts: UnorderedMap::new(b"posts".to_vec()),
+      post_id: 1,
     }
   }
 }
@@ -94,12 +96,14 @@ impl Default for SimpleVote {
 impl SimpleVote {
 
     pub fn create_post(&mut self, title: String, body: String) -> usize {
-        let post_id = (self.posts.len() + 1) as usize;
+        // let post_id = (self.posts.len() + 1) as usize;
+        let post_id = self.post_id;
         let author = env::predecessor_account_id();
         let create_at = env::block_timestamp();
         let new_post = Post::new(post_id, title.clone(), body, author.clone(), create_at);
 
         self.posts.insert(&post_id, &new_post);
+        self.post_id = self.post_id + 1;
 
         env::log(format!("Post: {} was created by {}", title, author).as_bytes());
 
