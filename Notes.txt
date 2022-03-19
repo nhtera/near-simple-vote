@@ -1,0 +1,23 @@
+source neardev/dev-account.env
+echo $CONTRACT_NAME
+
+near view $CONTRACT_NAME get_greeting '{"account_id": "$CONTRACT_NAME"}'
+near call $CONTRACT_NAME set_greeting '{"message": "Tien Nguyen 2"}' --accountId=$CONTRACT_NAME
+
+near call $CONTRACT_NAME create_post '{"title": "Day la tieu de 1", "body": "Day la noi dung 1"}' --accountId=nhtera.testnet
+near call $CONTRACT_NAME create_post '{"title": "Day la tieu de 2", "body": "Day la noi dung 2"}' --accountId=nhtera.testnet
+near call $CONTRACT_NAME create_post '{"title": "Day la tieu de 3", "body": "Day la noi dung 3"}' --accountId=nhtera.testnet
+near call $CONTRACT_NAME remove_post '{"post_id": 4}' --accountId=$CONTRACT_NAME
+near call $CONTRACT_NAME get_post '{"post_id": 1}' --accountId=$CONTRACT_NAME
+near view $CONTRACT_NAME get_post '{"post_id": 1}'
+
+near view $CONTRACT_NAME get_posts
+near call $CONTRACT_NAME up_vote '{"post_id": 1}' --accountId=nhtera.testnet
+near call $CONTRACT_NAME remove_upvote '{"post_id": 3}' --accountId=nhtera.testnet
+
+near call $CONTRACT_NAME down_vote '{"post_id": 2}' --accountId=nhtera.testnet
+
+
+https://explorer.testnet.near.org/accounts/dev-1647663786599-88044104910680
+
+near call $CONTRACT_NAME remove_post '{"post_id": 4}' --accountId=nhtera.testnet
