@@ -17,6 +17,11 @@ export default function Post({id, title, body, up_votes, down_votes, author}) {
         return '';
     }
 
+    const is_owner = () => {
+        const current_account_id = window.walletConnection.getAccountId();
+        return current_account_id === author;
+    }
+
     const upvote = async (id, voteStatus) => {
         if (!window.walletConnection.isSignedIn()) {
             toast.error("Please login before up/down vote");
@@ -80,8 +85,23 @@ export default function Post({id, title, body, up_votes, down_votes, author}) {
                     },
                   },
                 error: "Downvote failed!",
-            })
+            });
         }
+    }
+
+    const handleDeletePost = async (id) => {
+        if (confirm("Are you want delete the post!") == true) {
+            const delete_post = window.contract.remove_post({post_id: id});
+            await toast.promise(delete_post, {
+                pending: "Deleting post...",
+                success: {
+                    render({data}){
+                        return `Delete post successfully!`
+                    },
+                  },
+                error: "Delete post failed!",
+            });
+          }
     }
 
    
@@ -90,7 +110,8 @@ export default function Post({id, title, body, up_votes, down_votes, author}) {
     }
 
   return (
-    <section className="text-gray-600 py-5 body-font">
+    <section className="relative text-gray-600 py-5 body-font">
+        {is_owner() && <span onClick={handleDeletePost.bind(this, id)} title="Delete the post" className="inline-block absolute right-0 top-0 text-red-500 text-2xl cursor-pointer">x</span>}
         <div className="container px-5 mx-auto">
             <div className="xl:w-1/2 lg:w-3/4 w-full mx-auto text-center">
             <h1 className="text-gray-900 text-3xl title-font font-medium mb-1">{title}</h1>
