@@ -1,5 +1,6 @@
 import React, { useCallback, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 export default function CreatePost() {
   const navigate = useNavigate();
@@ -8,7 +9,7 @@ export default function CreatePost() {
     event.preventDefault();
 
     if (!window.walletConnection.isSignedIn()) {
-      alert("Please signin before create a post");
+      toast.error("Please signin before create a post");
       return;
     }
 
@@ -20,8 +21,14 @@ export default function CreatePost() {
       body,
     });
 
+    await toast.promise(result, {
+      pending: "Creating post...",
+      success: "Creating post successfully!",
+      error: "Creating post failed!",
+    });
+
     const postId = await result;
-    alert('Create post success');
+    // alert('Create post success');
     navigate('/');
   });
 
@@ -38,7 +45,7 @@ export default function CreatePost() {
             <label htmlFor="content" className="leading-7 text-sm text-gray-600">Content</label>
             <textarea id="content" name="content" className="w-full bg-white rounded border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 h-32 text-base outline-none text-gray-700 py-1 px-3 resize-none leading-6 transition-colors duration-200 ease-in-out"></textarea>
           </div>
-          <button className="text-white bg-green-600 border-0 py-2 px-6 focus:outline-none hover:bg-green-700 rounded text-lg">Submit</button>
+          <button className="text-white bg-green-500 border-0 py-2 px-6 focus:outline-none hover:bg-green-600 rounded text-lg">Submit</button>
         </div>
     </div>
     </form>

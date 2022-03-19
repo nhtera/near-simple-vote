@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useState } from "react"
-import { useNavigate } from "react-router-dom"
 import Post from "../components/Post";
 
 export default function Home() {
@@ -12,6 +11,7 @@ export default function Home() {
             setPosts(posts);
         })
     }, [posts]);
+
 
   return (
     <div className="container divide-y-2 divide-gray-100">

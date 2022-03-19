@@ -1,6 +1,5 @@
 import React from 'react'
-
-
+import { toast } from "react-toastify";
 
 export default function Post({id, title, body, up_votes, down_votes, author}) {
     let voteStatus = '';
@@ -18,42 +17,70 @@ export default function Post({id, title, body, up_votes, down_votes, author}) {
         return '';
     }
 
-    const upvote = (id, voteStatus) => {
+    const upvote = async (id, voteStatus) => {
         if (!window.walletConnection.isSignedIn()) {
-            alert("Please login before up/down vote");
+            toast.error("Please login before up/down vote");
             return;
         }
 
         if (voteStatus === 'upvote') {
-            window.contract.remove_upvote({post_id: id}).then(result => {
-                voteStatus = 'upvote';
-                alert('Remove upvote thanh cong');
-            });
+            const remove_upvote = window.contract.remove_upvote({post_id: id});
+            await toast.promise(remove_upvote, {
+                pending: "Removing upvote...",
+                success: {
+                    render({data}){
+                        voteStatus = 'upvote';
+                        return `Remove upvote successfully!`
+                    },
+                  },
+                error: "Remove upvote failed!",
+              });
         } else {
-            window.contract.up_vote({post_id: id}).then(result => {
-                voteStatus = 'upvote';
-                alert('Upvote thanh cong');
-            });
+            const add_upvote = window.contract.up_vote({post_id: id});
+            await toast.promise(add_upvote, {
+                pending: "Upvoting...",
+                success: {
+                    render({data}){
+                        voteStatus = 'upvote';
+                        return `Upvote successfully!`
+                    },
+                  },
+                error: "Upvote failed!",
+              });
         }
     }
 
-    const downvote = (id, voteStatus) => {
+    const downvote = async (id, voteStatus) => {
         if (!window.walletConnection.isSignedIn()) {
-            alert("Please login before up/down vote");
+            toast.error("Please login before up/down vote");
             return;
         }
-       
 
-        if (voteStatus === 'upvote') {
-            window.contract.remove_downvote({post_id: id}).then(result => {
-                voteStatus = 'downvote';
-                alert('Remove downvote thanh cong');
-            });
+        if (voteStatus === 'downvote') {
+            const remove_downvote = window.contract.remove_downvote({post_id: id});
+            await toast.promise(remove_downvote, {
+                pending: "Removing downvote...",
+                success: {
+                    render({data}){
+                        voteStatus = 'downvote';
+                        return `Remove downvote successfully!`
+                    },
+                  },
+                error: "Remove downvote failed!",
+              });
+
         } else {
-            window.contract.down_vote({post_id: id}).then(result => {
-                voteStatus = 'downvote';
-                alert('Downvote thanh cong');
-            });
+            const add_downvote = window.contract.down_vote({post_id: id});
+            await toast.promise(add_downvote, {
+                pending: "Downvoting...",
+                success: {
+                    render({data}){
+                        voteStatus = 'downvote';
+                        return `Downvote successfully!`
+                    },
+                  },
+                error: "Downvote failed!",
+            })
         }
     }
 
