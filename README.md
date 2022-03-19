@@ -86,6 +86,78 @@ As you can see in `package.json`, this does two things:
 2. builds & deploys frontend code to GitHub using [gh-pages]. This will only work if the project already has a repository set up on GitHub. Feel free to modify the `deploy` script in `package.json` to deploy elsewhere.
 
 
+Run the Demo
+===============
+1. Deploy contract and run web app
+```bash
+yarn dev
+```
+
+2. Export $CONTRACT_NAME variable
+```bash
+source neardev/dev-account.env
+echo $CONTRACT_NAME
+```
+
+3. Login with near
+
+```bash
+near login
+```
+
+3. Create posts
+
+```bash
+near call $CONTRACT_NAME create_post '{"title": "Day la tieu de 1", "body": "Day la noi dung 1"}' --accountId=nhtera.testnet
+near call $CONTRACT_NAME create_post '{"title": "Day la tieu de 2", "body": "Day la noi dung 2"}' --accountId=$CONTRACT_NAME
+near call $CONTRACT_NAME create_post '{"title": "Day la tieu de 3", "body": "Day la noi dung 3"}' --accountId=nhtera.testnet
+```
+
+4. Get posts
+
+```bash
+near view $CONTRACT_NAME get_posts
+```
+
+
+5. Get the post by id
+
+```bash
+near view $CONTRACT_NAME get_post '{"post_id": 1}'
+```
+
+6. Upvote
+
+```bash
+near call $CONTRACT_NAME up_vote '{"post_id": 1}' --accountId=nhtera.testnet
+near call $CONTRACT_NAME up_vote '{"post_id": 2}' --accountId=nhtera.testnet
+```
+
+7. Remove upvote
+
+```bash
+near call $CONTRACT_NAME remove_upvote '{"post_id": 2}' --accountId=nhtera.testnet
+```
+
+8. Downvote
+
+```bash
+near call $CONTRACT_NAME down_vote '{"post_id": 2}' --accountId=nhtera.testnet
+```
+
+9. Remove downvote
+
+```bash
+near call $CONTRACT_NAME remove_downvote '{"post_id": 2}' --accountId=nhtera.testnet
+```
+
+10. Remove post
+
+```bash
+near call $CONTRACT_NAME remove_post '{"post_id": 2}' --accountId=nhtera.testnet
+near call $CONTRACT_NAME remove_post '{"post_id": 2}' --accountId=$CONTRACT_NAME
+```
+
 Troubleshooting
 ===============
 
