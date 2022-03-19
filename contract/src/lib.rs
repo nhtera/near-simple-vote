@@ -178,7 +178,7 @@ impl SimpleVote {
         let voter = env::predecessor_account_id();
         env::log(format!("Remove downvote post: {} by account: {}", post_id, voter).as_bytes());
 
-        post.remove_upvote(voter);
+        post.remove_downvote(voter);
 
         self.posts.insert(&post_id, &post);
     }
@@ -278,6 +278,46 @@ mod tests {
         contract.up_vote(1);
 
         assert_eq!(1, contract.get_post(1).unwrap().up_votes.len());
+        assert_eq!(0, contract.get_post(1).unwrap().down_votes.len());
+    }
+
+    #[test]
+    fn remove_upvote() {
+        let context = get_context(vec![], false);
+        testing_env!(context);
+        let mut contract = SimpleVote::default();
+
+        contract.create_post("Day la tieu de".to_string(), "Day la noi dung".to_string());
+        contract.up_vote(1);
+        contract.remove_upvote(1);
+
+        assert_eq!(0, contract.get_post(1).unwrap().up_votes.len());
+        assert_eq!(0, contract.get_post(1).unwrap().down_votes.len());
+    }
+
+    #[test]
+    fn down_vote() {
+        let context = get_context(vec![], false);
+        testing_env!(context);
+        let mut contract = SimpleVote::default();
+
+        contract.create_post("Day la tieu de".to_string(), "Day la noi dung".to_string());
+        contract.down_vote(1);
+        assert_eq!(0, contract.get_post(1).unwrap().up_votes.len());
+        assert_eq!(1, contract.get_post(1).unwrap().down_votes.len());
+    }
+
+    #[test]
+    fn remove_downvote() {
+        let context = get_context(vec![], false);
+        testing_env!(context);
+        let mut contract = SimpleVote::default();
+
+        contract.create_post("Day la tieu de".to_string(), "Day la noi dung".to_string());
+        contract.down_vote(1);
+        contract.remove_downvote(1);
+
+        assert_eq!(0, contract.get_post(1).unwrap().up_votes.len());
         assert_eq!(0, contract.get_post(1).unwrap().down_votes.len());
     }
 
