@@ -13,7 +13,7 @@ window.nearInitPromise = initContract()
       <ToastContainer
       theme="colored"
         transition={Flip}
-        autoClose="5000"
+        autoClose="3000"
         position="top-center"
        />
       <App />
