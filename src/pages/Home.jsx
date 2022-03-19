@@ -16,7 +16,7 @@ export default function Home() {
   return (
     <div className="container divide-y-2 divide-gray-100">
         {posts.map((post, index) =>(
-            <Post key={post.post_id} id={post.post_id} title={post.title} body={post.body} up_votes={post.up_votes} down_votes={post.down_votes}></Post>
+            <Post key={post.post_id} id={post.post_id} title={post.title} body={post.body} up_votes={post.up_votes} down_votes={post.down_votes} author={post.author}></Post>
         ))}
     </div>
   )
