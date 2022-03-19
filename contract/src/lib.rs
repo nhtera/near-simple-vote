@@ -106,6 +106,12 @@ impl SimpleVote {
         post_id
     }
 
+    pub fn remove_post(&mut self, post_id: usize) {
+        let owner = env::signer_account_id();
+        assert_eq!(owner, env::predecessor_account_id(), "Only the owner has permission to delete the post");
+        self.posts.remove(&post_id);
+    }
+
     pub fn get_post(&self, post_id: usize) -> Option<Post> {
         self.posts.get(&post_id)
     }
